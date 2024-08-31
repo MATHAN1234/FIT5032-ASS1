@@ -13,6 +13,6 @@
   </script>
   
   <style scoped>
-  /* Add styles for your about page here */
+  /* Add any custom styles here */
   </style>
   

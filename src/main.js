@@ -4,8 +4,10 @@ import router from './router'; // Import router
 
 // Import Bootstrap CSS and JS
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap';
-import 'jquery/dist/jquery.min.js';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
+// Import custom styles
+import './assets/style.css';
 
 createApp(App)
   .use(router) // Use the router
