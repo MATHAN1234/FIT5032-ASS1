@@ -2,6 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../components/Home.vue';
 import Login from '../components/Login.vue';
 import About from '../components/About.vue';
+import Blog from '../components/Blog.vue'; 
+import Support from '../components/Support.vue';
+import Resources from '../components/Resources.vue';  
+import Getinvolved from '../components/Getinvolved.vue';  
 import AdminDashboard from '../components/AdminDashboard.vue';
 import UserDashboard from '../components/UserDashboard.vue';
 import { state } from '../state'; // Import the state object
@@ -10,6 +14,10 @@ const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/login', name: 'Login', component: Login },
   { path: '/about', name: 'About', component: About },
+  { path: '/blog', component: Blog },
+  {path: '/support', component: Support },
+  {path: '/resources', component: Resources },
+  {path: '/getinvolved', component: Getinvolved },
   {
     path: '/admin',
     name: 'AdminDashboard',

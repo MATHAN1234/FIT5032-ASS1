@@ -1,18 +1,43 @@
 <template>
-    <div>
-      <h1>About Page</h1>
-      <p>Learn more about us on this page.</p>
+  <div>
+    <!-- Include Header -->
+    <Header />
+
+    <!-- Main Content -->
+    <div class="container mt-4 text-top">
+      <h1>About us Page</h1>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    // eslint-disable-next-line vue/multi-word-component-names
-    name: 'About',
-  };
-  </script>
-  
-  <style scoped>
-  /* Add any custom styles here */
-  </style>
-  
+
+    <!-- Include Footer -->
+    <Footer />
+  </div>
+</template>
+
+<script>
+import Header from './Header.vue';
+import Footer from './Footer.vue';
+
+export default {
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: 'Blog',
+  components: {
+    // eslint-disable-next-line vue/no-reserved-component-names
+    Header,
+    // eslint-disable-next-line vue/no-reserved-component-names
+    Footer,
+  },
+};
+</script>
+
+<style scoped>
+.container {
+  min-height: 50vh; /* Ensure there is some space between header and footer */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+</style>
