@@ -140,8 +140,9 @@ export default {
           password: this.password,
           role: this.role,
         };
-        this.users.push(user);
-        localStorage.setItem('users', JSON.stringify(this.users)); // Save users to localStorage
+        
+        state.addUser(user); // Add user to global state
+
         state.currentUser = user; // Set the current user globally
         alert('Signup successful! You are now logged in.');
         this.toggleForm(true);
@@ -166,81 +167,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.auth-container {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 20px;
-  border-radius: 5px;
-}
-
-.auth-toggle {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.auth-toggle button {
-  flex: 1;
-  padding: 10px;
-  margin: 0 5px;
-  background-color: #f0f0f0;
-  border: none;
-  cursor: pointer;
-}
-
-.auth-toggle button.active {
-  background-color: #333;
-  color: white;
-}
-
-.auth-form.dark-background {
-  background-color: #333;
-  color: white;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-input, select {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-bottom: 10px;
-}
-
-button[type="submit"] {
-  width: 100%;
-  padding: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button[type="submit"]:hover {
-  background-color: #45a049;
-}
-
-.error {
-  color: red;
-  font-size: 0.875rem;
-  margin-top: -10px;
-  margin-bottom: 10px;
-  display: block;
-}
-</style>

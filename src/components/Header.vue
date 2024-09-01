@@ -46,8 +46,8 @@
             <router-link v-if="!currentUser" class="p-2 text-muted" to="/login">Login</router-link>
             <!-- Show Admin Dashboard link only for Admin role -->
             <router-link v-if="currentUser && currentUser.role === 'Admin'" class="p-2 text-muted" to="/admin">Admin Dashboard</router-link>
-            <!-- Show User Dashboard link for User and Admin roles -->
-            <router-link v-if="currentUser && (currentUser.role === 'User' || currentUser.role === 'Admin')" class="p-2 text-muted" to="/user">User Dashboard</router-link>
+            <!-- Show User Dashboard link only for User role -->
+            <router-link v-if="currentUser && currentUser.role === 'User'" class="p-2 text-muted" to="/user">User Dashboard</router-link>
           </nav>
         </div>
       </div>
@@ -56,17 +56,14 @@
   
   <script>
   import { state } from '../state'; // Import the global state
-  import { useRouter } from 'vue-router';
   
   export default {
     // eslint-disable-next-line vue/multi-word-component-names, vue/no-reserved-component-names
     name: 'Header',
     setup() {
-      const router = useRouter(); // Use Vue Router
-  
       const logout = () => {
         state.currentUser = null; // Clear the current user
-        router.push('/'); // Redirect to home page after logout
+        localStorage.removeItem('currentUser'); // Remove user from local storage
       };
   
       return {

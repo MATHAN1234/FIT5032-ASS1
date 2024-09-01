@@ -1,3 +1,77 @@
+/* Global Styles (style.css) */
+
+/* style.css */
+
+.container {
+  max-width: 1200px; /* Ensure the same width is applied globally */
+  margin: 0 auto; /* Center the container */
+  padding-left: 15px; /* Add padding for container */
+  padding-right: 15px; /* Add padding for container */
+}
+
+.blog-header {
+  line-height: 1;
+}
+
+.blog-header-logo {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-size: 2.25rem;
+  text-decoration: none;
+}
+
+.blog-header-logo:hover {
+  text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+}
+
+.display-4 {
+  font-size: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .display-4 {
+    font-size: 3rem;
+  }
+}
+
+.nav-scroller {
+  position: relative;
+  z-index: 2;
+  height: 2.75rem;
+  overflow-y: hidden;
+}
+
+.nav-scroller .nav {
+  display: flex;
+  flex-wrap: nowrap;
+  padding-bottom: 1rem;
+  margin-top: -1px;
+  overflow-x: auto;
+  text-align: center;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav-scroller .nav-link {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  font-size: .875rem;
+}
+
+/* Additional Global Styles */
+.sidebar {
+  margin-top: 20px;
+}
+
+.main-content {
+  margin-top: 20px;
+  padding: 20px;
+}
+
+
 .blog-header {
   line-height: 1;
   /* Removed margin to align with original design */
@@ -21,6 +95,7 @@ h1, h2, h3, h4, h5, h6 {
 .display-4 {
   font-size: 2.5rem;
 }
+
 @media (min-width: 768px) {
   .display-4 {
     font-size: 3rem;
@@ -61,6 +136,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .h-250 { height: 250px; }
+
 @media (min-width: 768px) {
   .h-md-250 { height: 250px; }
 }
@@ -75,6 +151,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 2rem;
   font-weight: 400;
 }
+
 .blog-description {
   font-size: 1.1rem;
   color: #999;
@@ -90,6 +167,7 @@ h1, h2, h3, h4, h5, h6 {
 .blog-pagination {
   margin-bottom: 4rem;
 }
+
 .blog-pagination > .btn {
   border-radius: 2rem;
 }
@@ -98,10 +176,12 @@ h1, h2, h3, h4, h5, h6 {
 .blog-post {
   margin-bottom: 4rem;
 }
+
 .blog-post-title {
   margin-bottom: .25rem;
   font-size: 2.5rem;
 }
+
 .blog-post-meta {
   margin-bottom: 1.25rem;
   color: #999;
@@ -114,8 +194,235 @@ h1, h2, h3, h4, h5, h6 {
   text-align: center;
   background-color: #f9f9f9;
   border-top: .05rem solid #e5e5e5;
-  margin-top:30px;
+  margin-top: 30px;
 }
+
 .blog-footer p:last-child {
   margin-bottom: 0px;
+}
+
+/* Additional styles for the home page jumbotron */
+.jumbotron {
+  background-color: #333; /* Ensure it matches the dark theme */
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.text-white {
+  color: white;
+}
+
+.font-weight-bold {
+  font-weight: bold;
+}
+
+.container {
+  max-width: 1200px; /* Ensure the container is responsive */
+}
+
+/* Styles for Login and Signup Forms */
+.auth-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.auth-toggle {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.auth-toggle button {
+  flex: 1;
+  padding: 10px;
+  margin: 0 5px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+}
+
+.auth-toggle button.active {
+  background-color: #333;
+  color: white;
+}
+
+.auth-form.dark-background {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input, select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+.error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* Styles for User Dashboard */
+.container {
+  /* max-width: 600px; */
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.dashboard-content {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-info-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+input:disabled {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+
+.admin-dashboard-container {
+    display: flex;
+    margin-top: 20px;
+    padding-left: 0; /* Remove padding to align with header */
+    padding-right: 0; /* Remove padding to align with header */
+  }
+  
+  .sidebar {
+    width: 200px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-right: 1px solid #ddd;
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .sidebar li {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .sidebar li.active {
+    background-color: #333;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    padding: 20px;
+  }
+  
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .user-table th, .user-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  /* Default styles for larger screens */
+.admin-dashboard-container {
+  display: flex;
+  flex-direction: row; /* Side by side on larger screens */
+}
+
+.sidebar {
+  flex: 0 0 200px; /* Fixed width for the sidebar */
+  background-color: #f8f9fa;
+  padding: 20px;
+  height: 100vh; /* Full height on larger screens */
+  position: fixed;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 220px; /* Space for sidebar */
+  padding: 20px;
+  overflow-x: auto; /* Allows horizontal scrolling if needed */
+}
+
+/* Adjust layout for smaller screens */
+@media (max-width: 768px) {
+  .admin-dashboard-container {
+    flex-direction: column; /* Stack elements vertically */
+  }
+
+  .sidebar {
+    width: 100%;
+    position: relative; /* No longer fixed */
+    height: auto; /* Adjust height */
+    order: 2; /* Show after main content */
+  }
+
+  .main-content {
+    margin-left: 0; /* No extra margin */
+    order: 1; /* Show before sidebar */
+  }
 }
