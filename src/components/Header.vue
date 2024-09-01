@@ -27,10 +27,6 @@
             <a v-if="!currentUser" class="btn btn-sm btn-outline-secondary" href="#">Sign up</a>
             <!-- Show Logout button if user is logged in -->
             <a v-if="currentUser" class="btn btn-sm btn-outline-secondary" @click="logout">Logout</a>
-            <!-- Show the logged-in user's name and role -->
-            <!-- <span v-if="currentUser" class="ml-3 text-muted">
-              {{ currentUser.name }} ({{ currentUser.role }})
-            </span> -->
           </div>
         </div>
         <hr />
@@ -55,19 +51,24 @@
   </template>
   
   <script>
-  import { state } from '../state'; // Import the global state
+  import { ref } from 'vue';
+  import { state, clearCurrentUser } from '../state'; // Import the global state and function to clear user
   
   export default {
     // eslint-disable-next-line vue/multi-word-component-names, vue/no-reserved-component-names
     name: 'Header',
     setup() {
+      // Reactive reference to the current user
+      const currentUser = ref(state.currentUser);
+  
+      // Function to handle logout
       const logout = () => {
-        state.currentUser = null; // Clear the current user
-        localStorage.removeItem('currentUser'); // Remove user from local storage
+        clearCurrentUser(); // Call the function to clear user from state
+        currentUser.value = null; // Reset the local reference to the current user
       };
   
       return {
-        currentUser: state.currentUser, // Bind the state to the template
+        currentUser,
         logout,
       };
     },
@@ -75,7 +76,6 @@
   </script>
   
   <style scoped>
-  /* Your existing styles will remain unchanged */
   .blog-header {
     background-color: #f8f9fa;
     border-bottom: 1px solid #e5e5e5;
