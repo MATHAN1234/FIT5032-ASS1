@@ -34,7 +34,8 @@
           <form @submit.prevent="handleSignup">
             <div class="form-group">
               <label for="name">Name:</label>
-              <input type="text" v-model="name" required />
+              <input type="text" v-model="name" @blur="validateName" required />
+              <span class="error" v-if="nameError">{{ nameError }}</span>
             </div>
             <div class="form-group">
               <label for="email">Email:</label>
@@ -85,6 +86,7 @@ export default {
       email: '',
       password: '',
       role: 'User', // Default role
+      nameError: '',
       emailError: '',
       passwordError: '',
       users: [], // To store user data dynamically
@@ -100,15 +102,29 @@ export default {
       this.email = '';
       this.password = '';
       this.role = 'User';
+      this.nameError = '';
       this.emailError = '';
       this.passwordError = '';
     },
+    validateName() {
+      // Validate name for bad characters
+      const nameRegex = /^[a-zA-Z0-9\s]*$/;
+      this.nameError = nameRegex.test(this.name) ? '' : 'Name contains invalid characters.';
+    },
     validateEmail() {
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      this.emailError = re.test(this.email) ? '' : 'Please enter a valid email address.';
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      this.emailError = emailRegex.test(this.email) ? '' : 'Please enter a valid email address.';
     },
     validatePassword() {
-      this.passwordError = this.password.length >= 6 ? '' : 'Password must be at least 6 characters.';
+      // Validate password for minimum length and check for bad characters
+      const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+=-]*$/; // Allow only specific special characters
+      if (this.password.length < 6) {
+        this.passwordError = 'Password must be at least 6 characters.';
+      } else if (!passwordRegex.test(this.password)) {
+        this.passwordError = 'Password contains invalid characters.';
+      } else {
+        this.passwordError = '';
+      }
     },
     handleLogin() {
       this.validateEmail();
@@ -131,22 +147,31 @@ export default {
       }
     },
     handleSignup() {
+      this.validateName();
       this.validateEmail();
       this.validatePassword();
-      if (this.name && !this.emailError && !this.passwordError) {
+      if (this.name && !this.emailError && !this.passwordError && !this.nameError) {
+        // Check if the email already exists
+        const userExists = this.users.some((u) => u.email === this.email);
+        if (userExists) {
+          alert('This user already exists. Please use a different email.');
+          return;
+        }
+
         const user = {
           name: this.name,
           email: this.email,
           password: this.password,
           role: this.role,
         };
-        
-        state.addUser(user); // Add user to global state
 
-        state.currentUser = user; // Set the current user globally
-        alert('Signup successful! You are now logged in.');
-        this.toggleForm(true);
-        this.redirectUser(user.role);
+        // Add user to global state and localStorage
+        this.users.push(user);
+        localStorage.setItem('users', JSON.stringify(this.users));
+
+        alert('Signup successful! You are now redirected to the login page.');
+        this.toggleForm(true); // Switch to login form after signup
+        this.resetForm(); // Reset the form after switching
       } else {
         alert('Please fill in all fields and correct any errors.');
       }
@@ -167,3 +192,43 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.auth-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+}
+
+.auth-toggle {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.auth-toggle button {
+  flex: 1;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.auth-toggle button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.auth-form {
+  padding: 20px;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+}
+</style>
