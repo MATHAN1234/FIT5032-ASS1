@@ -1,18 +1,246 @@
 <template>
-    <div>
-      <h1>Login Page</h1>
-      <p>Please enter your credentials to login.</p>
+  <div>
+    <!-- Include Header -->
+    <Header />
+
+    <div class="container">
+      <div class="auth-container">
+        <div class="auth-toggle">
+          <button @click="toggleForm(true)" :class="{ active: showLogin }">Login</button>
+          <button @click="toggleForm(false)" :class="{ active: !showLogin }">Sign Up</button>
+        </div>
+
+        <!-- Login Form -->
+        <div v-if="showLogin" class="auth-form dark-background">
+          <h2>Login</h2>
+          <form @submit.prevent="handleLogin">
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" v-model="email" @blur="validateEmail" required />
+              <span class="error" v-if="emailError">{{ emailError }}</span>
+            </div>
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" v-model="password" @blur="validatePassword" required />
+              <span class="error" v-if="passwordError">{{ passwordError }}</span>
+            </div>
+            <button type="submit">Login</button>
+          </form>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div v-else class="auth-form dark-background">
+          <h2>Sign Up</h2>
+          <form @submit.prevent="handleSignup">
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" v-model="name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" v-model="email" @blur="validateEmail" required />
+              <span class="error" v-if="emailError">{{ emailError }}</span>
+            </div>
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" v-model="password" @blur="validatePassword" required />
+              <span class="error" v-if="passwordError">{{ passwordError }}</span>
+            </div>
+            <div class="form-group">
+              <label for="role">Role:</label>
+              <select v-model="role" required>
+                <option value="User">User</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </div>
+            <button type="submit">Sign Up</button>
+          </form>
+        </div>
+      </div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    // eslint-disable-next-line vue/multi-word-component-names
-    name: 'Login',
-  };
-  </script>
-  
-  <style scoped>
-  /* Add any custom styles here */
-  </style>
-  
+
+    <!-- Include Footer -->
+    <Footer />
+  </div>
+</template>
+
+<script>
+import { state } from '../state'; // Assuming you have a state file for managing global state
+import Header from './Header.vue';
+import Footer from './Footer.vue';
+
+export default {
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: 'Login',
+  components: {
+    // eslint-disable-next-line vue/no-reserved-component-names
+    Header,
+    // eslint-disable-next-line vue/no-reserved-component-names
+    Footer,
+  },
+  data() {
+    return {
+      showLogin: true,
+      name: '',
+      email: '',
+      password: '',
+      role: 'User', // Default role
+      emailError: '',
+      passwordError: '',
+      users: [], // To store user data dynamically
+    };
+  },
+  methods: {
+    toggleForm(isLogin) {
+      this.showLogin = isLogin;
+      this.resetForm();
+    },
+    resetForm() {
+      this.name = '';
+      this.email = '';
+      this.password = '';
+      this.role = 'User';
+      this.emailError = '';
+      this.passwordError = '';
+    },
+    validateEmail() {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      this.emailError = re.test(this.email) ? '' : 'Please enter a valid email address.';
+    },
+    validatePassword() {
+      this.passwordError = this.password.length >= 6 ? '' : 'Password must be at least 6 characters.';
+    },
+    handleLogin() {
+      this.validateEmail();
+      this.validatePassword();
+      if (!this.emailError && !this.passwordError) {
+        // Simulate a successful login
+        const user = this.users.find(
+          (u) => u.email === this.email && u.password === this.password
+        );
+        if (user) {
+          state.currentUser = user; // Set the current user globally
+          alert(`Welcome ${user.name} (${user.role})!`);
+          // Redirect based on role
+          this.redirectUser(user.role);
+        } else {
+          alert('Invalid credentials. Please try again.');
+        }
+      } else {
+        alert('Please correct the errors before submitting.');
+      }
+    },
+    handleSignup() {
+      this.validateEmail();
+      this.validatePassword();
+      if (this.name && !this.emailError && !this.passwordError) {
+        const user = {
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          role: this.role,
+        };
+        this.users.push(user);
+        localStorage.setItem('users', JSON.stringify(this.users)); // Save users to localStorage
+        state.currentUser = user; // Set the current user globally
+        alert('Signup successful! You are now logged in.');
+        this.toggleForm(true);
+        this.redirectUser(user.role);
+      } else {
+        alert('Please fill in all fields and correct any errors.');
+      }
+    },
+    redirectUser(role) {
+      if (role === 'Admin') {
+        this.$router.push('/admin');
+      } else {
+        this.$router.push('/user');
+      }
+    },
+  },
+  created() {
+    const storedUsers = localStorage.getItem('users');
+    if (storedUsers) {
+      this.users = JSON.parse(storedUsers); // Load users from localStorage
+    }
+  },
+};
+</script>
+
+<style scoped>
+.auth-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.auth-toggle {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.auth-toggle button {
+  flex: 1;
+  padding: 10px;
+  margin: 0 5px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+}
+
+.auth-toggle button.active {
+  background-color: #333;
+  color: white;
+}
+
+.auth-form.dark-background {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input, select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+.error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  display: block;
+}
+</style>
