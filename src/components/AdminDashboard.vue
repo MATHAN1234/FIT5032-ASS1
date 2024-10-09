@@ -32,7 +32,7 @@
 
         <div v-else-if="selectedOption === 'users'">
           <h2>All Users</h2>
-          <table class="user-table">
+          <table v-if="users.length > 0" class="user-table">
             <thead>
               <tr>
                 <th>Name</th>
@@ -48,6 +48,7 @@
               </tr>
             </tbody>
           </table>
+          <p v-else>No users found.</p>
         </div>
       </div>
     </div>
@@ -60,7 +61,8 @@
 <script>
 import Header from './Header.vue';
 import Footer from './Footer.vue';
-import { state } from '../state'; // Import the global state to get the current user
+import { currentUser, fetchCurrentUser } from '../state'; // Import the global state and function to fetch user
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
 
 export default {
   name: 'AdminDashboard',
@@ -72,10 +74,25 @@ export default {
   },
   data() {
     return {
-      currentUser: state.currentUser, // Get the current user from the global state
+      currentUser: currentUser.value, // Get the current user from the global state
       selectedOption: 'profile', // Default to profile view
-      users: JSON.parse(localStorage.getItem('users')) || [] // Load all users from local storage
+      users: [], // Array to store users fetched from Firestore
     };
+  },
+  methods: {
+    async fetchAllUsers() {
+      try {
+        const db = getFirestore();
+        const querySnapshot = await getDocs(collection(db, 'users'));
+        this.users = querySnapshot.docs.map((doc) => doc.data());
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    },
+  },
+  async created() {
+    await fetchCurrentUser();
+    await this.fetchAllUsers(); // Fetch all users when the component is created
   },
 };
 </script>

@@ -2,22 +2,22 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../components/Home.vue';
 import Login from '../components/Login.vue';
 import About from '../components/About.vue';
-import Blog from '../components/Blog.vue'; 
+import Blog from '../components/Blog.vue';
 import Support from '../components/Support.vue';
-import Resources from '../components/Resources.vue';  
-import Getinvolved from '../components/Getinvolved.vue';  
+import Resources from '../components/Resources.vue';
+import Getinvolved from '../components/Getinvolved.vue';
 import AdminDashboard from '../components/AdminDashboard.vue';
 import UserDashboard from '../components/UserDashboard.vue';
-import { state } from '../state'; // Import the state object
+import { currentUser, fetchCurrentUser } from '../state'; // Import the currentUser ref and fetch function
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/login', name: 'Login', component: Login },
   { path: '/about', name: 'About', component: About },
   { path: '/blog', component: Blog },
-  {path: '/support', component: Support },
-  {path: '/resources', component: Resources },
-  {path: '/getinvolved', component: Getinvolved },
+  { path: '/support', component: Support },
+  { path: '/resources', component: Resources },
+  { path: '/getinvolved', component: Getinvolved },
   {
     path: '/admin',
     name: 'AdminDashboard',
@@ -38,12 +38,15 @@ const router = createRouter({
 });
 
 // Navigation guard to check for authentication and roles
-router.beforeEach((to, from, next) => {
-  const currentUser = state.currentUser; // Use the state to get the current user
+router.beforeEach(async (to, from, next) => {
+  // Ensure we have the latest user data
+  await fetchCurrentUser();
+  
+  const user = currentUser.value; // Get the current user from the reactive reference
 
-  if (to.meta.requiresAuth && !currentUser) {
+  if (to.meta.requiresAuth && !user) {
     next('/login'); // Redirect to login if not authenticated
-  } else if (to.meta.roles && (!currentUser || !to.meta.roles.includes(currentUser.role))) {
+  } else if (to.meta.roles && (!user || !to.meta.roles.includes(user.role))) {
     next('/'); // Redirect to home if user does not have the required role
   } else {
     next(); // Proceed to the route

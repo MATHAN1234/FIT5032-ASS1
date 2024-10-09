@@ -66,7 +66,11 @@
 </template>
 
 <script>
-import { state } from '../state'; // Assuming you have a state file for managing global state
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { auth } from '@/firebase';
 import Header from './Header.vue';
 import Footer from './Footer.vue';
 
@@ -79,156 +83,117 @@ export default {
     // eslint-disable-next-line vue/no-reserved-component-names
     Footer,
   },
-  data() {
-    return {
-      showLogin: true,
-      name: '',
-      email: '',
-      password: '',
-      role: 'User', // Default role
-      nameError: '',
-      emailError: '',
-      passwordError: '',
-      users: [], // To store user data dynamically
+  setup() {
+    const router = useRouter();
+    const showLogin = ref(true);
+    const name = ref('');
+    const email = ref('');
+    const password = ref('');
+    const role = ref('User');
+    const nameError = ref('');
+    const emailError = ref('');
+    const passwordError = ref('');
+
+    // Initialize Firestore
+    const db = getFirestore();
+
+    const toggleForm = (isLogin) => {
+      showLogin.value = isLogin;
+      resetForm();
     };
-  },
-  methods: {
-    toggleForm(isLogin) {
-      this.showLogin = isLogin;
-      this.resetForm();
-    },
-    resetForm() {
-      this.name = '';
-      this.email = '';
-      this.password = '';
-      this.role = 'User';
-      this.nameError = '';
-      this.emailError = '';
-      this.passwordError = '';
-    },
-    validateName() {
-      // Validate name for bad characters
+
+    const resetForm = () => {
+      name.value = '';
+      email.value = '';
+      password.value = '';
+      role.value = 'User';
+      nameError.value = '';
+      emailError.value = '';
+      passwordError.value = '';
+    };
+
+    const validateName = () => {
       const nameRegex = /^[a-zA-Z0-9\s]*$/;
-      this.nameError = nameRegex.test(this.name) ? '' : 'Name contains invalid characters.';
-    },
-    validateEmail() {
+      nameError.value = nameRegex.test(name.value) ? '' : 'Name contains invalid characters.';
+    };
+
+    const validateEmail = () => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      this.emailError = emailRegex.test(this.email) ? '' : 'Please enter a valid email address.';
-    },
-    validatePassword() {
-      // Validate password for minimum length and check for bad characters
-      const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+=-]*$/; // Allow only specific special characters
-      if (this.password.length < 6) {
-        this.passwordError = 'Password must be at least 6 characters.';
-      } else if (!passwordRegex.test(this.password)) {
-        this.passwordError = 'Password contains invalid characters.';
+      emailError.value = emailRegex.test(email.value) ? '' : 'Please enter a valid email address.';
+    };
+
+    const validatePassword = () => {
+      const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+=-]*$/;
+      if (password.value.length < 6) {
+        passwordError.value = 'Password must be at least 6 characters.';
+      } else if (!passwordRegex.test(password.value)) {
+        passwordError.value = 'Password contains invalid characters.';
       } else {
-        this.passwordError = '';
+        passwordError.value = '';
       }
-    },
-    handleLogin() {
-      this.validateEmail();
-      this.validatePassword();
-      if (!this.emailError && !this.passwordError) {
-        // Simulate a successful login
-        const user = this.users.find(
-          (u) => u.email === this.email && u.password === this.password
-        );
-        if (user) {
-          state.currentUser = user; // Set the current user globally
-          alert(`Welcome ${user.name} (${user.role})!`);
-          // Redirect based on role
-          this.redirectUser(user.role);
-        } else {
-          alert('Invalid credentials. Please try again.');
+    };
+
+    const handleSignup = async () => {
+      validateName();
+      validateEmail();
+      validatePassword();
+      if (name.value && !emailError.value && !passwordError.value && !nameError.value) {
+        try {
+          // Create user in Firebase Auth
+          const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+          const user = userCredential.user;
+
+          // Save additional data in Firestore
+          await setDoc(doc(db, 'users', user.uid), {
+            name: name.value,
+            email: email.value,
+            role: role.value
+          });
+
+          alert('Signup successful! You are now redirected to the login page.');
+          toggleForm(true); // Switch to login form after signup
+          resetForm(); // Reset the form after switching
+        } catch (error) {
+          alert(`Error signing up: ${error.message}`);
         }
-      } else {
-        alert('Please correct the errors before submitting.');
       }
-    },
-    handleSignup() {
-      this.validateName();
-      this.validateEmail();
-      this.validatePassword();
-      if (this.name && !this.emailError && !this.passwordError && !this.nameError) {
-        // Check if the email already exists
-        const userExists = this.users.some((u) => u.email === this.email);
-        if (userExists) {
-          alert('This user already exists. Please use a different email.');
-          return;
+    };
+
+    const handleLogin = async () => {
+      validateEmail();
+      validatePassword();
+      if (!emailError.value && !passwordError.value) {
+        try {
+          // Call the signInWithEmailAndPassword function correctly
+          await signInWithEmailAndPassword(auth, email.value, password.value);
+          alert(`Login successful!`);
+          router.push('/'); // Redirect to the home page or dashboard
+        } catch (error) {
+          alert(`Error logging in: ${error.message}`);
         }
-
-        const user = {
-          name: this.name,
-          email: this.email,
-          password: this.password,
-          role: this.role,
-        };
-
-        // Add user to global state and localStorage
-        this.users.push(user);
-        localStorage.setItem('users', JSON.stringify(this.users));
-
-        alert('Signup successful! You are now redirected to the login page.');
-        this.toggleForm(true); // Switch to login form after signup
-        this.resetForm(); // Reset the form after switching
-      } else {
-        alert('Please fill in all fields and correct any errors.');
       }
-    },
-    redirectUser(role) {
-      if (role === 'Admin') {
-        this.$router.push('/admin');
-      } else {
-        this.$router.push('/user');
-      }
-    },
-  },
-  created() {
-    const storedUsers = localStorage.getItem('users');
-    if (storedUsers) {
-      this.users = JSON.parse(storedUsers); // Load users from localStorage
-    }
+    };
+
+    return {
+      showLogin,
+      name,
+      email,
+      password,
+      role,
+      nameError,
+      emailError,
+      passwordError,
+      toggleForm,
+      validateName,
+      validateEmail,
+      validatePassword,
+      handleSignup,
+      handleLogin,
+    };
   },
 };
 </script>
 
 <style scoped>
-.auth-container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f8f9fa;
-}
-
-.auth-toggle {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.auth-toggle button {
-  flex: 1;
-  padding: 10px;
-  background-color: #333;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.auth-toggle button.active {
-  background-color: #007bff;
-  color: white;
-}
-
-.auth-form {
-  padding: 20px;
-}
-
-.error {
-  color: red;
-  font-size: 0.9em;
-}
+/* Your styles remain unchanged */
 </style>

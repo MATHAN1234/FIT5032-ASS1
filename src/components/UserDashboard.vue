@@ -36,14 +36,14 @@
             <button class="btn btn-primary mb-3" @click="addRating">Submit Rating</button>
 
             <!-- Display aggregated rating score with stars -->
-            <div v-if="ratings.length > 0" class="aggregated-rating">
-              <h3>Aggregated Rating: {{ aggregatedScore.toFixed(1) }} Stars</h3>
+            <div v-if="averageRating !== null" class="aggregated-rating">
+              <h3>Aggregated Rating: {{ averageRating.toFixed(1) }} Stars</h3>
               <div class="star-display">
                 <span
                   v-for="n in 5"
                   :key="n"
                   class="star"
-                  :class="{ filled: n <= aggregatedScore }"
+                  :class="{ filled: n <= averageRating }"
                 >
                   ★
                 </span>
@@ -62,7 +62,9 @@
 <script>
 import Header from './Header.vue';
 import Footer from './Footer.vue';
-import { state } from '../state'; // Import the global state to get the current user
+import { currentUser } from '../state';
+import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from 'firebase/firestore';
+import { arrayUnion } from 'firebase/firestore';
 
 export default {
   name: 'UserDashboard',
@@ -74,39 +76,71 @@ export default {
   },
   data() {
     return {
-      currentUser: state.currentUser, // Get the current user from the global state
+      currentUser: currentUser.value,
       newRating: 3, // Default rating value
-      ratings: [], // Array to store ratings
+      averageRating: null,
     };
   },
-  computed: {
-    // Calculate the aggregated score (average rating)
-    aggregatedScore() {
-      const total = this.ratings.reduce((sum, rating) => sum + rating, 0);
-      return total / this.ratings.length;
-    },
-  },
   methods: {
-    // Method to add a new rating to the list
-    addRating() {
-      if (this.newRating >= 1 && this.newRating <= 5) {
-        this.ratings.push(this.newRating);
-        localStorage.setItem('ratings', JSON.stringify(this.ratings)); // Persist ratings in localStorage
-      } else {
-        alert('Please select a rating between 1 and 5.');
+    async addRating() {
+    if (this.newRating >= 1 && this.newRating <= 5) {
+      try {
+        const db = getFirestore();
+        const userDocRef = doc(db, 'users', this.currentUser.uid);
+
+        // Fetch the user's document
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          // Log the document data for debugging
+          console.log('User document data:', userDoc.data());
+
+          // Update the user's ratings in Firestore (using arrayUnion correctly)
+          await updateDoc(userDocRef, {
+            ratings: arrayUnion(this.newRating),
+          });
+
+          alert('Rating submitted successfully!');
+          this.fetchAverageRating(); // Fetch the average rating after updating
+        } else {
+          console.error('User document does not exist.');
+        }
+      } catch (error) {
+        console.error('Error adding rating:', error);
       }
-    },
-    // Set the new rating when a star is clicked
+    } else {
+      alert('Please select a rating between 1 and 5.');
+    }
+  },
     setRating(rating) {
       this.newRating = rating;
     },
+    async fetchAverageRating() {
+      try {
+        const db = getFirestore();
+        const ratingsCollection = collection(db, 'users');
+        const querySnapshot = await getDocs(ratingsCollection);
+
+        let totalRating = 0;
+        let ratingCount = 0;
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.ratings && data.ratings.length > 0) {
+            totalRating += data.ratings.reduce((acc, rating) => acc + rating, 0);
+            ratingCount += data.ratings.length;
+          }
+        });
+
+        this.averageRating = ratingCount > 0 ? totalRating / ratingCount : null;
+      } catch (error) {
+        console.error('Error fetching ratings:', error);
+      }
+    },
   },
-  created() {
-    // Load ratings from localStorage if available
-    const storedRatings = localStorage.getItem('ratings');
-    if (storedRatings) {
-      this.ratings = JSON.parse(storedRatings);
-    }
+  async created() {
+    // Fetch the average rating when the component is created
+    await this.fetchAverageRating();
   },
 };
 </script>
@@ -115,21 +149,21 @@ export default {
 /* Star Styling */
 .star {
   cursor: pointer;
-  font-size: 24px; /* Larger stars */
-  color: #ddd; /* Default star color */
+  font-size: 24px;
+  color: #ddd;
   transition: color 0.2s;
 }
 
 .star.filled {
-  color: #ffd700; /* Gold color for filled stars */
+  color: #ffd700;
 }
 
 .star-rating-input {
-  font-size: 24px; /* Larger stars */
+  font-size: 24px;
 }
 
 .star-display {
-  font-size: 24px; /* Larger stars for aggregated rating display */
+  font-size: 24px;
 }
 
 .aggregated-rating {
