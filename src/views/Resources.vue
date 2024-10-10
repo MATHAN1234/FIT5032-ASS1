@@ -5,7 +5,7 @@
   
       <!-- Main Content -->
       <div class="container mt-4 text-top">
-        <h1> Get Involved Page</h1>
+        <h1>Resources Page</h1>
       </div>
   
       <!-- Include Footer -->
@@ -14,8 +14,9 @@
   </template>
   
   <script>
-  import Header from './Header.vue';
-  import Footer from './Footer.vue';
+import Header from '../components/Header.vue';
+import Footer from '../components/Footer.vue';
+
   
   export default {
     // eslint-disable-next-line vue/multi-word-component-names

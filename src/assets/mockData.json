@@ -1,0 +1,18 @@
+[
+    { "id": 1, "eventName": "Yoga for Seniors", "dateTime": "2024-10-15 10:00 AM", "location": "Community Center", "description": "A gentle yoga session for improving flexibility and balance." },
+    { "id": 2, "eventName": "Health Check-up Camp", "dateTime": "2024-10-20 09:00 AM", "location": "Health Center", "description": "Free health check-ups for seniors." },
+    { "id": 3, "eventName": "Nutrition Workshop", "dateTime": "2024-10-25 02:00 PM", "location": "Library Hall", "description": "Learn about nutrition for healthy aging." },
+    { "id": 4, "eventName": "Memory Support Group", "dateTime": "2024-11-01 11:00 AM", "location": "Park Pavilion", "description": "Support group meeting for memory care." },
+    { "id": 5, "eventName": "Gardening Club", "dateTime": "2024-11-05 09:30 AM", "location": "Botanical Gardens", "description": "Join us for a morning of gardening tips and activities." },
+    { "id": 6, "eventName": "Art Therapy Session", "dateTime": "2024-11-10 03:00 PM", "location": "Art Center", "description": "Express creativity and relieve stress through art." },
+    { "id": 7, "eventName": "Hiking Trip", "dateTime": "2024-11-15 08:00 AM", "location": "Hilltop Trail", "description": "A guided hike to enjoy nature and stay active." },
+    { "id": 8, "eventName": "Mindfulness Meditation", "dateTime": "2024-11-20 07:00 PM", "location": "Wellness Center", "description": "A session on mindfulness techniques for relaxation." },
+    { "id": 9, "eventName": "Technology Workshop", "dateTime": "2024-11-22 11:00 AM", "location": "Library Tech Room", "description": "Learn how to use smartphones and tablets." },
+    { "id": 10, "eventName": "Holiday Crafting Class", "dateTime": "2024-12-01 01:00 PM", "location": "Community Hall", "description": "Create holiday decorations and gifts." },
+    { "id": 11, "eventName": "Senior Movie Night", "dateTime": "2024-12-05 06:00 PM", "location": "Community Theater", "description": "Enjoy a classic film with friends." },
+    { "id": 12, "eventName": "Fitness for Seniors", "dateTime": "2024-12-10 09:00 AM", "location": "Gymnasium", "description": "A low-impact workout session to stay fit." },
+    { "id": 13, "eventName": "Volunteer Training", "dateTime": "2024-12-15 02:00 PM", "location": "Volunteer Center", "description": "Training for new volunteers to support our elderly programs." },
+    { "id": 14, "eventName": "Cooking for Wellness", "dateTime": "2024-12-20 04:00 PM", "location": "Kitchen Studio", "description": "A class on cooking healthy meals." },
+    { "id": 15, "eventName": "Elderly Book Club", "dateTime": "2024-12-25 10:00 AM", "location": "Library Lounge", "description": "Discussing books and sharing literary interests." }
+  ]
+  

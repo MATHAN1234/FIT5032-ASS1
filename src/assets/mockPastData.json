@@ -1,0 +1,13 @@
+[
+    { "id": 1, "name": "Yoga for Seniors", "date": "2024-09-10 10:00 AM", "location": "Community Center", "description": "A gentle yoga session for seniors." },
+    { "id": 2, "name": "Health Check-up Camp", "date": "2024-09-05 09:00 AM", "location": "Health Center", "description": "Free health check-ups." },
+    { "id": 3, "name": "Gardening Workshop", "date": "2024-08-20 09:30 AM", "location": "Botanical Gardens", "description": "Learn about gardening." },
+    { "id": 4, "name": "Art Therapy Session", "date": "2024-07-15 02:00 PM", "location": "Art Center", "description": "Express your creativity." },
+    { "id": 5, "name": "Hiking Trip", "date": "2024-06-10 07:00 AM", "location": "Hilltop Trail", "description": "A guided hike for nature lovers." },
+    { "id": 6, "name": "Mindfulness Meditation", "date": "2024-05-25 05:00 PM", "location": "Wellness Center", "description": "Meditation session for relaxation." },
+    { "id": 7, "name": "Holiday Crafts", "date": "2024-04-12 01:00 PM", "location": "Library Hall", "description": "Create holiday decorations." },
+    { "id": 8, "name": "Nutrition Workshop", "date": "2024-03-18 11:00 AM", "location": "Health Center", "description": "Nutrition tips for healthy aging." },
+    { "id": 9, "name": "Memory Support Group", "date": "2024-02-14 02:30 PM", "location": "Community Hall", "description": "Support for memory care." },
+    { "id": 10, "name": "Technology for Seniors", "date": "2024-01-30 03:00 PM", "location": "Library Tech Room", "description": "Learn about smartphones." }
+  ]
+  

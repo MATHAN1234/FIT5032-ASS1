@@ -1,20 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../components/Home.vue';
-import Login from '../components/Login.vue';
-import About from '../components/About.vue';
-import Blog from '../components/Blog.vue';
-import Support from '../components/Support.vue';
-import Resources from '../components/Resources.vue';
-import Getinvolved from '../components/Getinvolved.vue';
-import AdminDashboard from '../components/AdminDashboard.vue';
-import UserDashboard from '../components/UserDashboard.vue';
+import Home from '../views/Home.vue';
+import Login from '../views/Login.vue';  // Moved to views
+import About from '../views/About.vue';  // Moved to views
+import Blog from '../views/Blog.vue';    // Moved to views
+import Support from '../views/Support.vue';
+import Resources from '../views/Resources.vue';
+import Getinvolved from '../views/Getinvolved.vue';
+import AdminDashboard from '../views/AdminDashboard.vue'; // Moved to views
+import UserDashboard from '../views/UserDashboard.vue';
 import { currentUser, fetchCurrentUser } from '../state'; // Import the currentUser ref and fetch function
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/login', name: 'Login', component: Login },
   { path: '/about', name: 'About', component: About },
-  { path: '/blog', component: Blog },
+  { path: '/blog', name: 'Blog', component: Blog },
   { path: '/support', component: Support },
   { path: '/resources', component: Resources },
   { path: '/getinvolved', component: Getinvolved },

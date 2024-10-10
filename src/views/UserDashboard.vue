@@ -60,8 +60,8 @@
 </template>
 
 <script>
-import Header from './Header.vue';
-import Footer from './Footer.vue';
+import Header from '../components/Header.vue';
+import Footer from '../components/Footer.vue';
 import { currentUser } from '../state';
 import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from 'firebase/firestore';
 import { arrayUnion } from 'firebase/firestore';

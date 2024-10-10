@@ -71,8 +71,9 @@ import { useRouter } from 'vue-router';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { auth } from '@/firebase';
-import Header from './Header.vue';
-import Footer from './Footer.vue';
+import Header from '../components/Header.vue';
+import Footer from '../components/Footer.vue';
+
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names

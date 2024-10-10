@@ -59,8 +59,8 @@
 </template>
 
 <script>
-import Header from './Header.vue';
-import Footer from './Footer.vue';
+import Header from '../components/Header.vue';
+import Footer from '../components/Footer.vue';
 import { currentUser, fetchCurrentUser } from '../state'; // Import the global state and function to fetch user
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 
