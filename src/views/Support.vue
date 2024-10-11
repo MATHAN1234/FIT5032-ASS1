@@ -1,49 +1,38 @@
-<!-- eslint-disable vue/no-unused-vars -->
 <template>
   <div>
-    <!-- Include Header -->
     <Header />
-
     <div class="container mt-4">
       <h1>Upcoming Events and Workshops for the Elderly</h1>
       <p>Browse and register for upcoming events and workshops</p>
 
-      <!-- Search Field and Table Container -->
-      <div class="table-container">
-        <div class="search-container">
+      <v-data-table
+        :headers="headers"
+        :items="filteredRows"
+        :items-per-page="10"
+        class="elevation-1"
+        :search="search"
+        multi-sort
+      >
+        <template v-slot:top>
           <v-text-field
             v-model="search"
             label="Search Events"
-            class="search-field"
-            solo
-            hide-details
+            class="mx-4"
+            clearable
           ></v-text-field>
-        </div>
-
-        <v-data-table
-          :headers="headers"
-          :items="rows"
-          :items-per-page="10"
-          :search="search"
-          class="elevation-1"
-          multi-sort
-        >
-          <template v-slot:[`item.register`]="{ item }">
-            <v-btn color="primary">Register</v-btn>
-          </template>
-        </v-data-table>
-      </div>
+        </template>
+      </v-data-table>
     </div>
-
-    <!-- Include Footer -->
     <Footer />
   </div>
 </template>
 
 <script>
-import mockData from '@/assets/mockData.json';
+// eslint-disable-next-line no-unused-vars
+import axios from 'axios';
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
+import mockData from '@/assets/mockData.json';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -56,17 +45,26 @@ export default {
   },
   data() {
     return {
-      search: '', // Search term
       headers: [
         { text: 'ID', value: 'id' },
-        { text: 'Event Name', value: 'name' },
-        { text: 'Date/Time', value: 'datetime' },
+        { text: 'Event Name', value: 'eventName' },
+        { text: 'Date/Time', value: 'dateTime' },
         { text: 'Location', value: 'location' },
         { text: 'Description', value: 'description' },
-        { text: 'Register', value: 'register', sortable: false },
+        { text: 'Action', value: 'register', sortable: false },
       ],
       rows: mockData,
+      search: '',
     };
+  },
+  computed: {
+    filteredRows() {
+      return this.rows.filter((row) =>
+        Object.values(row).some((val) =>
+          val.toString().toLowerCase().includes(this.search.toLowerCase())
+        )
+      );
+    },
   },
 };
 </script>
@@ -81,24 +79,6 @@ export default {
 }
 
 h1 {
-  margin-bottom: 10px;
-}
-
-p {
   margin-bottom: 20px;
-}
-
-.table-container {
-  width: 100%;
-}
-
-.search-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
-}
-
-.search-field {
-  max-width: 300px;
 }
 </style>

@@ -1,11 +1,7 @@
 <template>
   <div class="app-container">
-    <!-- Include Header -->
     <Header />
-
-    <!-- Admin Dashboard Layout -->
     <div class="admin-dashboard-container">
-      <!-- Sidebar -->
       <div class="sidebar">
         <ul>
           <li>
@@ -20,8 +16,6 @@
           </li>
         </ul>
       </div>
-
-      <!-- Main Content -->
       <div class="main-content">
         <div v-if="selectedOption === 'profile'">
           <h2>Admin Profile</h2>
@@ -29,9 +23,10 @@
           <p><strong>Email:</strong> {{ currentUser.email }}</p>
           <p><strong>Role:</strong> {{ currentUser.role }}</p>
         </div>
-
         <div v-else-if="selectedOption === 'users'">
           <h2>All Users</h2>
+          <button @click="fetchUserCount" class="btn btn-primary">Get Total User Count</button>
+          <p v-if="userCount !== null">Total users: {{ userCount }}</p>
           <table v-if="users.length > 0" class="user-table">
             <thead>
               <tr>
@@ -52,17 +47,22 @@
         </div>
       </div>
     </div>
-
-    <!-- Include Footer -->
     <Footer />
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
-import { currentUser, fetchCurrentUser } from '../state'; // Import the global state and function to fetch user
+import { currentUser, fetchCurrentUser } from '../state';
+import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { firebaseConfig } from '@/firebase.js'; 
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 export default {
   name: 'AdminDashboard',
@@ -74,15 +74,24 @@ export default {
   },
   data() {
     return {
-      currentUser: currentUser.value, // Get the current user from the global state
-      selectedOption: 'profile', // Default to profile view
-      users: [], // Array to store users fetched from Firestore
+      currentUser: currentUser.value,
+      selectedOption: 'profile',
+      users: [],
+      userCount: null,
     };
   },
   methods: {
+    async fetchUserCount() {
+      try {
+        const response = await axios.get('https://us-central1-health-charity.cloudfunctions.net/getUserCount');
+        this.userCount = response.data.count;
+      } catch (error) {
+        console.error('Error fetching user count:', error);
+        this.userCount = 'Error fetching count';
+      }
+    },
     async fetchAllUsers() {
       try {
-        const db = getFirestore();
         const querySnapshot = await getDocs(collection(db, 'users'));
         this.users = querySnapshot.docs.map((doc) => doc.data());
       } catch (error) {
@@ -92,34 +101,32 @@ export default {
   },
   async created() {
     await fetchCurrentUser();
-    await this.fetchAllUsers(); // Fetch all users when the component is created
+    await this.fetchAllUsers();
   },
 };
 </script>
 
 <style scoped>
-/* Apply a flex layout to the overall app container */
+/* Your styles remain the same */
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* Admin Dashboard Layout */
 .admin-dashboard-container {
   display: flex;
-  flex: 1; /* Allow content to grow and push footer to bottom */
+  flex: 1;
 }
 
-/* Sidebar */
 .sidebar {
-  width: 200px; /* Fixed width for sidebar */
+  width: 200px;
   background-color: #f8f9fa;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  height: 58%; /* Adjust the height to match the container */
-  margin-top: -20px; /* Align sidebar with the header */
+  height: 58%;
+  margin-top: -20px;
 }
 
 .sidebar ul {
@@ -145,13 +152,11 @@ export default {
   color: white;
 }
 
-/* Main Content */
 .main-content {
-  flex: 1; /* Take up the remaining space */
+  flex: 1;
   padding: 20px;
 }
 
-/* Table Styling */
 .user-table {
   width: 100%;
   border-collapse: collapse;
@@ -169,24 +174,23 @@ export default {
   font-weight: bold;
 }
 
-/* Footer should stay at the bottom */
 footer {
-  margin-top: auto; /* Push footer to the bottom of the page */
+  margin-top: auto;
 }
 
 @media (max-width: 768px) {
   .admin-dashboard-container {
-    flex-direction: column; /* Stack sidebar and content vertically on smaller screens */
+    flex-direction: column;
   }
 
   .sidebar {
-    width: 100%; /* Full width on smaller screens */
+    width: 100%;
     padding: 10px;
-    height: auto; /* Adjust height on smaller screens */
+    height: auto;
   }
 
   .main-content {
-    margin-left: 0; /* Reset margin for small screens */
+    margin-left: 0;
   }
 }
 </style>
