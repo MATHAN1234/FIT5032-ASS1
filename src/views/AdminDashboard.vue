@@ -26,7 +26,9 @@
         <div v-else-if="selectedOption === 'users'">
           <h2>All Users</h2>
           <button @click="fetchUserCount" class="btn btn-primary">Get Total User Count</button>
-          <p v-if="userCount !== null">Total users: {{ userCount }}</p>
+          <p v-if="userCount !== null">Total users: {{ userCount }}</p><br>
+          <button @click="exportToCSV" class="btn btn-secondary mt-3">Export to CSV </button>
+          <button @click="exportToPDF" class="btn btn-secondary mt-3 ml-2">Export to PDF</button>
           <table v-if="users.length > 0" class="user-table">
             <thead>
               <tr>
@@ -53,12 +55,15 @@
 
 <script>
 import axios from 'axios';
+import { saveAs } from 'file-saver';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
 import { currentUser, fetchCurrentUser } from '../state';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { firebaseConfig } from '@/firebase.js'; 
+import { firebaseConfig } from '@/firebase.js';
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -97,6 +102,26 @@ export default {
       } catch (error) {
         console.error('Error fetching users:', error);
       }
+    },
+    exportToCSV() {
+      const csvContent = [
+        ['Name', 'Email', 'Role'],
+        ...this.users.map((user) => [user.name, user.email, user.role]),
+      ]
+        .map((e) => e.join(','))
+        .join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      saveAs(blob, 'users_report.csv');
+    },
+    exportToPDF() {
+      const doc = new jsPDF();
+      doc.text('User Report', 20, 10);
+      doc.autoTable({
+        head: [['Name', 'Email', 'Role']],
+        body: this.users.map((user) => [user.name, user.email, user.role]),
+      });
+      doc.save('users_report.pdf');
     },
   },
   async created() {

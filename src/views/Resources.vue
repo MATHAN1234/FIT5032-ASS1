@@ -4,10 +4,10 @@
     <div class="container mt-4">
       <div class="instruction">
         <p>
-          Welcome to the ElderCare Resources page. Please enter your home address and the address of a nearby hospital. Our platform will calculate the route, estimated distance, and duration for you.
+          Welcome to the ElderCare Resources page. Please enter your home address and the address of a nearby hospital. Our platform will calculate the route, estimated distance, and duration for you. Use the Tab key to navigate through fields and buttons.
         </p>
       </div>
-      <div ref="map" style="height: 500px; width: 100%;"></div>
+      <div ref="map" style="height: 500px; width: 100%;" aria-label="Map displaying your route"></div>
 
       <!-- Input fields for addresses -->
       <input
@@ -16,6 +16,7 @@
         placeholder="Enter your home address"
         list="home-suggestions"
         class="form-control mt-3"
+        aria-label="Home address input field"
       />
       <datalist id="home-suggestions">
         <option v-for="suggestion in homeSuggestions" :key="suggestion.id" :value="suggestion.place_name"></option>
@@ -27,15 +28,22 @@
         placeholder="Enter the hospital address"
         list="hospital-suggestions"
         class="form-control mt-3"
+        aria-label="Hospital address input field"
       />
       <datalist id="hospital-suggestions">
         <option v-for="suggestion in hospitalSuggestions" :key="suggestion.id" :value="suggestion.place_name"></option>
       </datalist>
 
-      <button @click="calculateRoute" class="btn btn-primary mt-3">Calculate Route</button>
+      <button
+        @click="calculateRoute"
+        class="btn btn-primary mt-3"
+        aria-label="Calculate route button"
+      >
+        Calculate Route
+      </button>
 
       <!-- Display distance and duration -->
-      <div v-if="routeInfo" class="mt-4">
+      <div v-if="routeInfo" class="mt-4" aria-live="polite">
         <p><strong>Distance:</strong> {{ routeInfo.distance }} km</p>
         <p><strong>Duration:</strong> {{ routeInfo.duration }} minutes</p>
       </div>
@@ -43,6 +51,7 @@
     <Footer />
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
