@@ -34,11 +34,11 @@
       <div class="nav-scroller py-1 mb-2">
         <nav class="nav d-flex justify-content-between">
           <router-link class="p-2 text-muted" to="/">Home</router-link>
-          <router-link class="p-2 text-muted" to="/about">About Us</router-link>
+          <!-- <router-link class="p-2 text-muted" to="/about">About Us</router-link> -->
           <router-link class="p-2 text-muted" to="/resources">Resources</router-link>
           <router-link class="p-2 text-muted" to="/support">Support</router-link>
           <router-link class="p-2 text-muted" to="/getinvolved">Get Involved</router-link>
-          <router-link class="p-2 text-muted" to="/blog">Blog</router-link>
+          <!-- <router-link class="p-2 text-muted" to="/blog">Blog</router-link> -->
           <router-link v-if="currentUser && currentUser.role === 'Admin'" class="p-2 text-muted" to="/admin">Admin Dashboard</router-link>
           <router-link v-if="currentUser && currentUser.role === 'User'" class="p-2 text-muted" to="/user">User Dashboard</router-link>
         </nav>
@@ -48,35 +48,30 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
 import { currentUser, clearCurrentUser, fetchCurrentUser } from '../state';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/firebase';
 
 export default {
-  // eslint-disable-next-line vue/multi-word-component-names, vue/no-reserved-component-names
+  // eslint-disable-next-line vue/no-reserved-component-names, vue/multi-word-component-names
   name: 'Header',
   setup() {
-    const user = ref(currentUser);
-
     // Function to handle logout
     const logout = async () => {
       try {
         await signOut(auth);
         clearCurrentUser(); // Clear user from global state
-        user.value = null; // Reset local reference
         window.location.reload(); // Reload the page to reflect the changes
       } catch (error) {
         console.error('Error logging out:', error);
       }
     };
 
-    onMounted(async () => {
-      await fetchCurrentUser();
-    });
+    // Fetch the current user when the component is mounted
+    fetchCurrentUser();
 
     return {
-      currentUser: user,
+      currentUser,
       logout,
     };
   },

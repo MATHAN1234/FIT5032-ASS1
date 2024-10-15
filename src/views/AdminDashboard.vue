@@ -1,60 +1,65 @@
+<!-- eslint-disable vue/valid-v-slot -->
 <template>
-  <div class="app-container">
+  <v-app>
     <Header />
-    <div class="admin-dashboard-container">
-      <div class="sidebar">
-        <ul>
-          <li>
-            <button @click="selectedOption = 'profile'" :class="{ active: selectedOption === 'profile' }">
-              Profile
-            </button>
-          </li>
-          <li>
-            <button @click="selectedOption = 'users'" :class="{ active: selectedOption === 'users' }">
-              Display All Users
-            </button>
-          </li>
-        </ul>
-      </div>
-      <div class="main-content">
-        <div v-if="selectedOption === 'profile'">
-          <h2>Admin Profile</h2>
-          <p><strong>Name:</strong> {{ currentUser.name }}</p>
-          <p><strong>Email:</strong> {{ currentUser.email }}</p>
-          <p><strong>Role:</strong> {{ currentUser.role }}</p>
+    <v-container>
+      <div class="admin-dashboard-container">
+        <div class="sidebar">
+          <ul>
+            <li>
+              <button @click="selectedOption = 'profile'" :class="{ active: selectedOption === 'profile' }">
+                Profile
+              </button>
+            </li>
+            <li>
+              <button @click="selectedOption = 'users'" :class="{ active: selectedOption === 'users' }">
+                Display All Users
+              </button>
+            </li>
+          </ul>
         </div>
-        <div v-else-if="selectedOption === 'users'">
-          <h2>All Users</h2>
-          <button @click="fetchUserCount" class="btn btn-primary">Get Total User Count</button>
-          <p v-if="userCount !== null">Total users: {{ userCount }}</p><br>
-          <button @click="exportToCSV" class="btn btn-secondary mt-3">Export to CSV </button>
-          <button @click="exportToPDF" class="btn btn-secondary mt-3 ml-2">Export to PDF</button>
-          <table v-if="users.length > 0" class="user-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="user in users" :key="user.email">
-                <td>{{ user.name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <p v-else>No users found.</p>
+        <div class="main-content">
+          <div v-if="selectedOption === 'profile'">
+            <h2>Admin Profile</h2>
+            <p><strong>Name:</strong> {{ currentUser.name }}</p>
+            <p><strong>Email:</strong> {{ currentUser.email }}</p>
+            <p><strong>Role:</strong> {{ currentUser.role }}</p>
+          </div>
+          <div v-else-if="selectedOption === 'users'">
+            <h2>All Users</h2>
+            <button @click="fetchUserCount" class="btn btn-primary">Get Total User Count</button>
+            <p v-if="userCount !== null">Total users: {{ userCount }}</p><br>
+
+            <!-- Export Buttons -->
+            <button @click="exportToCSV" class="btn btn-secondary mt-3">Export to CSV</button>
+            <button @click="exportToPDF" class="btn btn-secondary mt-3 ml-2">Export to PDF</button>
+
+            <!-- Interactive Data Table using Vuetify -->
+            <v-data-table
+              :headers="headers"
+              :items="users"
+              :search="search"
+              :items-per-page="10"
+              class="elevation-1"
+            >
+              <template v-slot:top>
+                <v-text-field v-model="search" label="Search" class="mx-4" />
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <v-btn color="red darken-1" small @click="deleteUser(item.id)">Delete</v-btn>
+              </template>
+            </v-data-table>
+          </div>
         </div>
       </div>
-    </div>
+    </v-container>
     <Footer />
-  </div>
+  </v-app>
 </template>
 
+
+
 <script>
-import axios from 'axios';
 import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -62,7 +67,7 @@ import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
 import { currentUser, fetchCurrentUser } from '../state';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { firebaseConfig } from '@/firebase.js';
 
 // Initialize Firebase
@@ -83,24 +88,39 @@ export default {
       selectedOption: 'profile',
       users: [],
       userCount: null,
+      search: '',
+      headers: [
+        { text: 'Name', value: 'name' },
+        { text: 'Email', value: 'email' },
+        { text: 'Role', value: 'role' },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
     };
   },
   methods: {
     async fetchUserCount() {
-      try {
-        const response = await axios.get('https://us-central1-health-charity.cloudfunctions.net/getUserCount');
-        this.userCount = response.data.count;
-      } catch (error) {
-        console.error('Error fetching user count:', error);
-        this.userCount = 'Error fetching count';
-      }
+      this.userCount = this.users.length;
     },
     async fetchAllUsers() {
       try {
         const querySnapshot = await getDocs(collection(db, 'users'));
-        this.users = querySnapshot.docs.map((doc) => doc.data());
+        this.users = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       } catch (error) {
         console.error('Error fetching users:', error);
+      }
+    },
+    async deleteUser(userId) {
+      const confirmDelete = confirm('Are you sure you want to delete this user?');
+
+      if (confirmDelete) {
+        try {
+          const userDoc = doc(db, 'users', userId);
+          await deleteDoc(userDoc);
+          alert('User deleted successfully');
+          this.fetchAllUsers(); // Refresh the users list
+        } catch (error) {
+          console.error('Error deleting user:', error);
+        }
       }
     },
     exportToCSV() {
@@ -126,13 +146,14 @@ export default {
   },
   async created() {
     await fetchCurrentUser();
-    await this.fetchAllUsers();
+    await this.fetchAllUsers(); // Ensure users are fetched on component mount
   },
 };
 </script>
 
+
+
 <style scoped>
-/* Your styles remain the same */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -180,23 +201,6 @@ export default {
 .main-content {
   flex: 1;
   padding: 20px;
-}
-
-.user-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.user-table th, .user-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-.user-table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
 }
 
 footer {

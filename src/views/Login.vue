@@ -51,7 +51,7 @@
               <label for="role">Role:</label>
               <select v-model="role" required>
                 <option value="User">User</option>
-                <option value="Admin">Admin</option>
+                <!-- <option value="Admin">Admin</option> -->
               </select>
             </div>
             <button type="submit">Sign Up</button>
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+// import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
@@ -73,7 +74,7 @@ import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { auth } from '@/firebase';
 import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
-
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -165,9 +166,15 @@ export default {
       validatePassword();
       if (!emailError.value && !passwordError.value) {
         try {
-          // Call the signInWithEmailAndPassword function correctly
+          // Log in with Firebase Auth
           await signInWithEmailAndPassword(auth, email.value, password.value);
           alert(`Login successful!`);
+
+          // Send confirmation email via Firebase Cloud Function
+          const functions = getFunctions();
+          const sendWelcomeEmail = httpsCallable(functions, 'sendWelcomeEmail');
+          await sendWelcomeEmail({ email: email.value });
+
           router.push('/'); // Redirect to the home page or dashboard
         } catch (error) {
           alert(`Error logging in: ${error.message}`);
